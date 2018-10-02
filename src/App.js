@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import Addform from './components/Addform';
-
+import Task from './components/Task';
 class App extends Component {
   constructor(){
     super();
@@ -11,34 +11,32 @@ class App extends Component {
     }
     this.addRecord = this.addRecord.bind(this);
     this.delRecord = this.delRecord.bind(this);
+    this.getRecord = this.getRecord.bind(this);
   }
   componentDidMount() {
     fetch('http://localhost:4000/tasks')
-      .then(res => res.json())
-      .then(tasks => this.setState({tasks}))
-      .catch(err => console.log(err));
+    .then(res => res.json())
+    .then(tasks => this.setState({tasks}))
+    .catch(err => console.log(err));
+  }
+  getRecord(e){
+    const tasks = this.state.tasks.map(task => {
+      if(e.id == task.id){
+        return e
+      }
+      return task;
+    })
+    this.setState({tasks});
   }
   addRecord(e){
     const tasks = [...this.state.tasks, e];
     this.setState({tasks})
   }
   delRecord(e){
-    const id = e.target.getAttribute('datakey');
-    fetch('http://localhost:4000/tasks/'+id,{
-      method: "DELETE",
-      headers:{
-        'Content-Type': 'application/json',
-      }
-    }).then(() => {
-      fetch('http://localhost:4000/tasks')
-        .then(res => res.json())
-        .then(tasks => this.setState({tasks}))
-        .catch(err => console.log(err));
-    })
-      .catch(err => console.log(err))
+   this.setState({tasks: e})
   }
   render() {
-    const tasks = this.state.tasks.map(task => <li className="list-group-item" key={task.id}>{task.title} - {task.isCompleted} - <button className="btn btn-primary">Edit</button> - <button className="btn btn-danger" onClick={this.delRecord} datakey={task.id}>Delete</button></li>)
+    const tasks = this.state.tasks.map(task => <Task key={task.id} {...task} onDel={this.delRecord} onUpdate={this.getRecord} />)
     return (
       <div className="App mt5">
         <header className="App-header">
