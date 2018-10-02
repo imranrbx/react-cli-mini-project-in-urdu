@@ -10,6 +10,7 @@ class App extends Component {
       tasks:[]
     }
     this.addRecord = this.addRecord.bind(this);
+    this.delRecord = this.delRecord.bind(this);
   }
   componentDidMount() {
     fetch('http://localhost:4000/tasks')
@@ -21,8 +22,23 @@ class App extends Component {
     const tasks = [...this.state.tasks, e];
     this.setState({tasks})
   }
+  delRecord(e){
+    const id = e.target.getAttribute('datakey');
+    fetch('http://localhost:4000/tasks/'+id,{
+      method: "DELETE",
+      headers:{
+        'Content-Type': 'application/json',
+      }
+    }).then(() => {
+      fetch('http://localhost:4000/tasks')
+        .then(res => res.json())
+        .then(tasks => this.setState({tasks}))
+        .catch(err => console.log(err));
+    })
+      .catch(err => console.log(err))
+  }
   render() {
-    const tasks = this.state.tasks.map(task => <li className="list-group-item" key={task.id}>{task.title} - {task.isCompleted} - <button className="btn btn-primary">Edit</button></li>)
+    const tasks = this.state.tasks.map(task => <li className="list-group-item" key={task.id}>{task.title} - {task.isCompleted} - <button className="btn btn-primary">Edit</button> - <button className="btn btn-danger" onClick={this.delRecord} datakey={task.id}>Delete</button></li>)
     return (
       <div className="App mt5">
         <header className="App-header">
@@ -42,8 +58,6 @@ class App extends Component {
             </div>
           </div>
         </div>
-        
-   
         </div>
       </div>
     );
