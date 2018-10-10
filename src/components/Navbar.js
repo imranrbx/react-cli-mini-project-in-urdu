@@ -40,6 +40,7 @@ class Navbar extends Component {
                                 <li className="nav-item">
                                     <Link className="nav-link" to="/contact" id="dropdownId">Contact</Link>
                                 </li>
+
                             </ul>
                         </div>
                     </nav>
